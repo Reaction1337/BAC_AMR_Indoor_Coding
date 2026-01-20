@@ -1,0 +1,147 @@
+#Preprint figure 1& figure 2
+#Plot 1: describe 24 samples LCMS result
+#Using bar chart plot with total BAC concentration,  c12=yellow,  c-14=green, C16=red
+#filepath=
+
+#==============================
+# Plot 1: LCMS BAC bar chart
+#==============================
+
+library(tidyverse)
+library(readxl)
+
+# 1. Excel
+filepath <- ""
+bac_data <- read_excel(filepath) %>%
+  rename(Sample = `Sample ID`)  
+
+
+total_bac <- bac_data %>%
+  select(-Total) %>%       
+  mutate(Total = C12 + C14 + C16) %>%
+  arrange(desc(Total)) %>%
+  select(Sample, Total)
+
+
+bac_long <- bac_data %>%
+  pivot_longer(cols = c(C12, C14, C16),
+               names_to = "Chain",
+               values_to = "Concentration") %>%
+  mutate(Sample = factor(Sample, levels = total_bac$Sample))
+
+
+bac_stacked <- bac_long %>%
+  group_by(Sample) %>%
+  arrange(factor(Chain, levels = c("C12", "C14", "C16"))) %>%
+  mutate(
+    ymin = cumsum(lag(Concentration, default = 0)),
+    ymax = ymin + Concentration
+  ) %>%
+  ungroup()
+
+
+p <- ggplot(bac_stacked, aes(x = Sample)) +
+  geom_rect(aes(
+    ymin = ymin, ymax = ymax,
+    xmin = as.numeric(Sample) - 0.4,
+    xmax = as.numeric(Sample) + 0.4,
+    fill = Chain
+  )) +
+  scale_fill_manual(values = c(
+    "C12" = "#08306B",  
+    "C14" = "#4292C6",  
+    "C16" = "#DEEBF7"   
+  ),
+  name = "BAC chain length") +
+  labs(
+    x = "Sample ID",
+    y = "Concentration (µg/g)"
+  ) +
+  theme_classic(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  )
+
+print(p)
+
+
+
+
+
+#Plot 2, 
+library(tidyverse)
+library(readxl)
+
+
+filepath <- ""
+bac_data <- read_excel(filepath) %>% rename(Sample = `Sample ID`)
+
+
+bac_long <- bac_data %>%
+  pivot_longer(cols = c(C12, C14, C16),
+               names_to = "Chain",
+               values_to = "Concentration")
+
+#10th, 25th, median, 75th, 90th
+stats <- bac_long %>%
+  group_by(Chain) %>%
+  summarise(
+    p10 = quantile(Concentration, 0.10),
+    p25 = quantile(Concentration, 0.25),
+    median = median(Concentration),
+    p75 = quantile(Concentration, 0.75),
+    p90 = quantile(Concentration, 0.90)
+  )
+
+# 
+p_custom <- ggplot() +
+  #25th–75th
+  geom_rect(data = stats,
+            aes(xmin = as.numeric(factor(Chain)) - 0.3,
+                xmax = as.numeric(factor(Chain)) + 0.3,
+                ymin = p25,
+                ymax = p75,
+                fill = Chain),
+            alpha = 0.5) +
+  geom_segment(data = stats,
+               aes(x = as.numeric(factor(Chain)) - 0.3,
+                   xend = as.numeric(factor(Chain)) + 0.3,
+                   y = median,
+                   yend = median),
+               color = "black", size = 1) +
+  # 10th–90th
+  geom_errorbar(data = stats,
+                aes(x = as.numeric(factor(Chain)),
+                    ymin = p10,
+                    ymax = p90),
+                width = 0.1, color = "black") +
+
+  geom_jitter(data = bac_long,
+              aes(x = as.numeric(factor(Chain)), y = Concentration),
+              width = 0.15, color = "black", size = 2, alpha = 0.8) +
+
+  scale_x_continuous(breaks = 1:3, labels = c("C12", "C14", "C16")) +
+
+  scale_fill_manual(values = c(
+    "C12" = "#08306B",
+    "C14" = "#4292C6",
+    "C16" = "#DEEBF7"
+  )) +
+
+  labs(
+       x = "BAC homologs",
+       y = expression(BAC~Concentration~(mu*g/g))) +
+
+  theme_classic(base_size = 14) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    axis.title.x = element_text(face = "bold")
+  )
+
+print(p)
+
+print(p_custom)
+
