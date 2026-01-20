@@ -1,0 +1,50 @@
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+df <- read_excel("")
+
+
+df <- df %>% mutate(MIC_log2 = log2(MIC))
+
+
+pearson_res <- cor.test(df$Total, df$MIC_log2, method = "pearson")
+r_val <- round(pearson_res$estimate, 3)
+p_val <- signif(pearson_res$p.value, 3)
+
+cat(" Pearson correlation:\n")
+cat("r =", r_val, "\n")
+cat("p =", p_val, "\n")
+
+
+x_min <- min(df$Total)
+x_max <- max(df$Total)
+y_min <- min(df$MIC_log2)
+y_max <- max(df$MIC_log2)
+
+
+p <- ggplot(df, aes(x = Total, y = MIC_log2, color = MIC_log2)) +
+  geom_point(size = 4, alpha = 0.8) +
+  scale_color_gradient(low = "pink", high = "red") +
+  scale_x_continuous(limits = c(x_min, x_max),
+                     breaks = pretty_breaks(n = 5)) +
+  scale_y_continuous(limits = c(y_min, y_max),
+                     breaks = pretty_breaks(n = 5)) +
+  labs(
+    x = "BAC Concentration in dust(µg/g)",
+    y = "log2(MIC)",
+    color = "MIC (log2)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.ticks = element_line(color = "black")
+  )
+
+print(p)
+
+    
+    
