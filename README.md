@@ -6,6 +6,11 @@ Authors: Jiahe Yu, BS; Shelby Tillema, MS; Mary Akel, MPH; Abigail Aron, BA; Est
 For any question, contact: Jiaheyu2024@u.northwestern.edu or erica.hartmann@northwestern.edu
 
 The directory structure is as follows:
+
 **Codes**: Original codes for generate figures in R studio.
+
 **Figures&Tables**: High-resolution figures generated.
+
 **Genomic pipelines**:Bioinformatic analysis pipeline.
+
+
