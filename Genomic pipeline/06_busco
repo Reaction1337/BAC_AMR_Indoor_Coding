@@ -1,0 +1,47 @@
+#!/bin/bash
+
+############################################################
+# Activate environment
+############################################################
+
+module purge all
+module load python-anaconda3/2019.10
+### source activate
+
+############################################################
+# User-defined variables
+############################################################
+samples=("barcodeID")
+SAMPLE=${samples[$SLURM_ARRAY_TASK_ID]}
+
+ASSEMBLY="-medaka output"
+
+OUTDIR="-output"
+
+OUTNAME="busco_name"
+
+# Common bacterial lineage
+LINEAGE="bacteria_odb10"
+# BUSCO database location
+DOWNLOAD_PATH="-path"
+############################################################
+# Create output directory
+############################################################
+
+mkdir -p ${OUTDIR}
+
+############################################################
+# Run BUSCO
+############################################################
+
+busco \
+    -i ${ASSEMBLY} \
+    -o ${OUTNAME} \
+    -m genome \
+    -l  #lineagepath\
+    -c ${SLURM_CPUS_PER_TASK} \
+    --out_path ${OUTDIR} \
+    --offline \
+    -f
+
+echo "BUSCO completed."
