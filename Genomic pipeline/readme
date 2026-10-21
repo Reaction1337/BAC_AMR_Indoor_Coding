@@ -1,1 +1,8 @@
+Bioinfomatic analysis pipeline for Accumulation of Benzalkonium Chloride from Disinfectants in Dust Associated with Increased Microbial Tolerance
+doi: https://doi.org/10.64898/2026.04.14.26350823
+The script has been sanitized to remove cluster usage details and personal information.
 
+RGI/CARD: Run the scripts using Singularity on the Quest cluster.
+
+Mobilome Annotation Pipeline (MAP): Use Singularity to run the software. No batch script is provided in this repository; please refer to the official website for usage instructions.
+https://github.com/EBI-Metagenomics/mobilome-annotation-pipeline
