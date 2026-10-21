@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+############################################################
+# Activate environment
+############################################################
+
+module purge all
+module load python-anaconda3/2019.10
+#python 
+
+############################################################
+# User-defined variables
+############################################################
+samples=("BarcodeID")
+SAMPLE=${samples[$SLURM_ARRAY_TASK_ID]}
+
+ASSEMBLY="-medaka output"
+
+OUTDIR="-output"
+
+############################################################
+# Create output directory
+############################################################
+
+mkdir -p ${OUTDIR}
+
+############################################################
+# Run QUAST
+############################################################
+
+python #-path \
+    ${ASSEMBLY} \
+    -o ${OUTDIR} \
+    --threads ${SLURM_CPUS_PER_TASK}
+
+echo "QUAST completed."
