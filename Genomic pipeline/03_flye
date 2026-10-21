@@ -1,0 +1,44 @@
+#!/bin/bash
+
+############################################################
+# Activate environment
+############################################################
+
+module purge all
+module load python-anaconda3/2019.10
+#source activate 
+flye --version
+
+############################################################
+# User-defined variables
+############################################################
+samples=("")
+
+READS="-filtlong Output"
+
+OUTDIR="-output"
+
+# Estimated genome size
+# Example:
+# 5m = 5 Mb bacterial genome
+GENOME_SIZE="5m"
+
+############################################################
+# Create output directory
+############################################################
+
+mkdir -p ${OUTDIR}
+
+############################################################
+# Run Flye
+############################################################
+# Different Nanopore flowcell ~ different arguments for input reads
+#Use R10 flowcell in Hartmann Lab
+
+flye \
+    --nano-hq ${READS} \
+    --genome-size ${GENOME_SIZE} \
+    --threads ${SLURM_CPUS_PER_TASK} \
+    --out-dir ${OUTDIR}
+
+echo "Flye completed."
