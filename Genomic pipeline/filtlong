@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+############################################################
+# Activate environment
+############################################################
+module purge all
+module load python-anaconda3/2019.10
+#source activate
+filtlong --version
+
+############################################################
+# User-defined variables
+############################################################
+samples=("-barcodeID")
+
+INPUT_FASTQ="-input"
+
+OUTPUT_FASTQ="-output"
+
+############################################################
+# Create output directory
+############################################################
+
+mkdir -p "-output"
+
+############################################################
+# Run Filtlong
+############################################################
+
+filtlong \
+    --min_length 1000 \
+    --keep_percent 95 \
+    ${INPUT_FASTQ} \
+    > ${OUTPUT_FASTQ}
+
+gzip ${OUTPUT_FASTQ}
+
+echo "Filtlong completed."
