@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+
+############################################################
+# Activate environment
+############################################################
+module purge all
+module load python-anaconda3/2019.10
+#source activate 
+NanoPlot --version
+
+############################################################
+# User-defined variables
+############################################################
+samples=("")
+
+READS="-input"
+
+OUTDIR="-output"
+
+############################################################
+# Create output directory
+############################################################
+
+mkdir -p ${OUTDIR}
+
+############################################################
+# Run NanoPlot
+############################################################
+echo "Running sample ${samples[$SLURM_ARRAY_TASK_ID]}"
+
+NanoPlot \
+    --fastq ${READS} \
+    --threads ${SLURM_CPUS_PER_TASK} \
+    --outdir ${OUTDIR}
+
+echo "NanoPlot completed."
